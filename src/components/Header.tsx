@@ -5,16 +5,16 @@ const Header = () => {
     <header className="sticky top-0 z-50 w-full bg-card/95 backdrop-blur-md border-b border-border">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <img 
-            src={logo} 
-            alt="Farm2Flat Logo" 
+          <img
+            src={logo}
+            alt="Farm2Flat Logo"
             className="w-14 h-14 rounded-full shadow-soft animate-float"
           />
           <div>
             <h1 className="text-2xl md:text-3xl font-extrabold text-primary tracking-tight">
               FARM2FLAT
             </h1>
-            <p className="text-xs text-muted-foreground hidden sm:block">
+            <p className="text-xs sm:text-sm text-muted-foreground leading-tight">
               Fresh produce, straight to you
             </p>
           </div>
