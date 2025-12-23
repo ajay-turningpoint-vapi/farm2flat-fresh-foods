@@ -45,7 +45,7 @@ const PRODUCTS: Product[] = [
 ];
 
 // WhatsApp number for orders
-const WHATSAPP_NUMBER = "918975944936";
+const WHATSAPP_NUMBER = "919892122899";
 
 const Index = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
