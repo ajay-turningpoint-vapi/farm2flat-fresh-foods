@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import Header from "@/components/Header";
 import HeroBanner from "@/components/HeroBanner";
@@ -11,38 +11,10 @@ import HowWeWork from "@/components/HowWeWork";
 import DeliveryInfo from "@/components/DeliveryInfo";
 import FAQ from "@/components/FAQ";
 import { Product, CartItem } from "@/types/product";
+import productsService from "@/lib/products";
 
-import potatoImg from "@/assets/potato.png";
-import onionImg from "@/assets/onion.png";
-import garlicImg from "@/assets/garlic.png";
-
-// Products with dynamic prices - these can be updated easily
-const PRODUCTS: Product[] = [
-  {
-    id: "potato",
-    name: "Potato",
-    nameHindi: "आलू",
-    price: 25,
-    unit: "kg",
-    image: potatoImg,
-  },
-  {
-    id: "onion",
-    name: "Onion",
-    nameHindi: "प्याज",
-    price: 30,
-    unit: "kg",
-    image: onionImg,
-  },
-  {
-    id: "garlic",
-    name: "Garlic",
-    nameHindi: "लहसुन",
-    price: 120,
-    unit: "kg",
-    image: garlicImg,
-  },
-];
+// Products will be loaded from `productsService` (localStorage)
+const PRODUCTS_PLACEHOLDER: Product[] = [];
 
 // WhatsApp number for orders
 const WHATSAPP_NUMBER = "919892122899";
@@ -72,9 +44,7 @@ const Index = () => {
       return;
     }
     setCart((prev) =>
-      prev.map((item) =>
-        item.id === productId ? { ...item, quantity } : item
-      )
+      prev.map((item) => (item.id === productId ? { ...item, quantity } : item))
     );
   };
 
@@ -84,24 +54,41 @@ const Index = () => {
       return;
     }
 
-    const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    
-    const paymentInfo = paymentMethod === "online" 
-      ? `💳 *Payment: Online (UPI) - PAID*\n\n`
-      : `💵 *Payment: Cash on Delivery*\n\n`;
-    
+    const totalPrice = cart.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+
+    const paymentInfo =
+      paymentMethod === "online"
+        ? `💳 *Payment: Online (UPI) - PAID*\n\n`
+        : `💵 *Payment: Cash on Delivery*\n\n`;
+
     const message = encodeURIComponent(
       `🌿 *Farm2Flat Order*\n\n` +
-      `${cart.map((item) => `• ${item.name} - ${item.quantity} ${item.unit} @ ₹${item.price}/${item.unit} = ₹${item.price * item.quantity}`).join("\n")}\n\n` +
-      `*Total: ₹${totalPrice}*\n\n` +
-      paymentInfo +
-      `Please confirm my order. Thank you!`
+        `${cart
+          .map(
+            (item) =>
+              `• ${item.name} - ${item.quantity} ${item.unit} @ ₹${
+                item.price
+              }/${item.unit} = ₹${item.price * item.quantity}`
+          )
+          .join("\n")}\n\n` +
+        `*Total: ₹${totalPrice}*\n\n` +
+        paymentInfo +
+        `Please confirm my order. Thank you!`
     );
 
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
     window.open(whatsappUrl, "_blank");
     toast.success("Opening WhatsApp to place your order!");
   };
+
+  const [products, setProducts] = useState<Product[]>(PRODUCTS_PLACEHOLDER);
+
+  useEffect(() => {
+    setProducts(productsService.loadProducts());
+  }, []);
 
   const getCartItem = (productId: string) => {
     return cart.find((item) => item.id === productId);
@@ -111,7 +98,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <HeroBanner />
-      
+
       <main className="container mx-auto px-4 py-8 pb-32">
         <div className="text-center mb-8 animate-fade-in">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
@@ -121,12 +108,15 @@ const Index = () => {
             Farm-fresh vegetables at daily market prices
           </p>
         </div>
-        
+
         <PriceNotice />
-        
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {PRODUCTS.map((product, index) => (
-            <div key={product.id} style={{ animationDelay: `${index * 150}ms` }}>
+          {products.map((product, index) => (
+            <div
+              key={product.id}
+              style={{ animationDelay: `${index * 150}ms` }}
+            >
               <ProductCard
                 product={product}
                 cartItem={getCartItem(product.id)}
@@ -137,7 +127,7 @@ const Index = () => {
           ))}
         </div>
       </main>
-      
+
       <CartSummary cartItems={cart} onPlaceOrder={handlePlaceOrder} />
       <HowWeWork />
       <DeliveryInfo />
