@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import Header from "@/components/Header";
 import HeroBanner from "@/components/HeroBanner";
@@ -7,6 +7,9 @@ import CartSummary from "@/components/CartSummary";
 import PriceNotice from "@/components/PriceNotice";
 import Footer from "@/components/Footer";
 import BusinessDetails from "@/components/BusinessDetails";
+import HowWeWork from "@/components/HowWeWork";
+import DeliveryInfo from "@/components/DeliveryInfo";
+import FAQ from "@/components/FAQ";
 import { Product, CartItem } from "@/types/product";
 
 import potatoImg from "@/assets/potato.png";
@@ -136,6 +139,9 @@ const Index = () => {
       </main>
       
       <CartSummary cartItems={cart} onPlaceOrder={handlePlaceOrder} />
+      <HowWeWork />
+      <DeliveryInfo />
+      <FAQ />
       <BusinessDetails />
       <Footer />
     </div>
