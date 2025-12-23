@@ -28,10 +28,10 @@ const BusinessDetails = () => {
             </div>
             <h4 className="font-semibold text-foreground mb-1">Contact Number</h4>
             <a 
-              href="tel:9892122899" 
+              href="tel:9892162899" 
               className="text-primary font-medium hover:underline"
             >
-              +91 98921 22899
+              +91 98921 62899
             </a>
           </div>
           

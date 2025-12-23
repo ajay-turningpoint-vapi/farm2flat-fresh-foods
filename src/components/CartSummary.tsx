@@ -6,7 +6,7 @@ import PaymentModal from "./PaymentModal";
 
 interface CartSummaryProps {
   cartItems: CartItem[];
-  onPlaceOrder: (paymentMethod: "cod" | "online") => void;
+  onPlaceOrder: (paymentMethod: "cod" | "online", address: string) => void;
 }
 
 const CartSummary = ({ cartItems, onPlaceOrder }: CartSummaryProps) => {

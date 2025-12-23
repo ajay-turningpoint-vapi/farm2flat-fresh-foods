@@ -65,7 +65,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             (props as any)["aria-label"] ||
             (props as any).title ||
             (typeof props.children === "string" ? props.children : "Action");
-          toast(`${label}` || "Action");
+          // toast(`${label}` || "Action");
         }
       } catch (err) {
         // ignore

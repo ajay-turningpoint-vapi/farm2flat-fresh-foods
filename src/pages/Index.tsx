@@ -17,7 +17,7 @@ import productsService from "@/lib/products";
 const PRODUCTS_PLACEHOLDER: Product[] = [];
 
 // WhatsApp number for orders
-const WHATSAPP_NUMBER = "919892122899";
+const WHATSAPP_NUMBER = "919892162899";
 
 const Index = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -34,13 +34,13 @@ const Index = () => {
       }
       return [...prev, { ...product, quantity: 1 }];
     });
-    toast.success(`${product.name} added to cart!`);
+    // toast.success(`${product.name} added to cart!`);
   };
 
   const handleUpdateQuantity = (productId: string, quantity: number) => {
     if (quantity <= 0) {
       setCart((prev) => prev.filter((item) => item.id !== productId));
-      toast.info("Item removed from cart");
+      // toast.info("Item removed from cart");
       return;
     }
     setCart((prev) =>
@@ -48,9 +48,12 @@ const Index = () => {
     );
   };
 
-  const handlePlaceOrder = (paymentMethod: "cod" | "online") => {
+  const handlePlaceOrder = (
+    paymentMethod: "cod" | "online",
+    address: string
+  ) => {
     if (cart.length === 0) {
-      toast.error("Your cart is empty!");
+      // toast.error("Your cart is empty!");
       return;
     }
 
@@ -75,6 +78,7 @@ const Index = () => {
           )
           .join("\n")}\n\n` +
         `*Total: ₹${totalPrice}*\n\n` +
+        `*Delivery address:*\n${address}\n\n` +
         paymentInfo +
         `Please confirm my order. Thank you!`
     );

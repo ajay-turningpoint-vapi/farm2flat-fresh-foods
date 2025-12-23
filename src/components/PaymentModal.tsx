@@ -1,43 +1,124 @@
-import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useState, useEffect, useRef } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, CreditCard, Banknote } from "lucide-react";
 import { CartItem } from "@/types/product";
-import upiQR from "@/assets/upi-qr.png";
+import upiQR from "@/assets/upi-qr.jpeg";
 
 interface PaymentModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   cartItems: CartItem[];
-  onPlaceOrder: (paymentMethod: "cod" | "online") => void;
+  // added address parameter so caller receives the delivery address
+  onPlaceOrder: (paymentMethod: "cod" | "online", address: string) => void;
 }
 
-const PaymentModal = ({ open, onOpenChange, cartItems, onPlaceOrder }: PaymentModalProps) => {
+const PaymentModal = ({
+  open,
+  onOpenChange,
+  cartItems,
+  onPlaceOrder,
+}: PaymentModalProps) => {
   const [paymentMethod, setPaymentMethod] = useState<"cod" | "online">("cod");
-  const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const totalPrice = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const qrRef = useRef<HTMLImageElement | null>(null);
+  const [highlightQR, setHighlightQR] = useState(false);
+
+  const [address, setAddress] = useState<string>("");
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("f2f_address_v1");
+      if (saved) setAddress(saved);
+    } catch (e) {}
+  }, []);
+
+  const saveAddress = (addr: string) => {
+    setAddress(addr);
+    try {
+      localStorage.setItem("f2f_address_v1", addr);
+    } catch (e) {}
+  };
 
   const handlePlaceOrder = () => {
-    onPlaceOrder(paymentMethod);
+    if (!address || address.trim().length === 0) {
+      // require address before placing order
+      try {
+        alert("Please enter your delivery address before placing the order.");
+      } catch (e) {
+        /* ignore */
+      }
+      return;
+    }
+
+    onPlaceOrder(paymentMethod, address);
     onOpenChange(false);
   };
 
+  // When online payment is selected on small screens, scroll modal to bottom
+  useEffect(() => {
+    if (paymentMethod !== "online") return;
+    // consider mobile if width < 640px (Tailwind's sm breakpoint)
+    if (typeof window === "undefined") return;
+    if (window.innerWidth >= 640) return;
+
+    // small timeout to allow UI to render (images/QR) before scrolling
+    const t = setTimeout(() => {
+      try {
+        const el = dialogRef.current;
+        if (el) {
+          el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+        }
+
+        // also try to scroll the QR image into view and highlight it briefly
+        const q = qrRef.current;
+        if (q) {
+          q.scrollIntoView({ behavior: "smooth", block: "center" });
+          setHighlightQR(true);
+          setTimeout(() => setHighlightQR(false), 1600);
+        }
+      } catch (e) {
+        /* ignore */
+      }
+    }, 120);
+
+    return () => clearTimeout(t);
+  }, [paymentMethod]);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent ref={dialogRef} className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-foreground">
             Choose Payment Method
           </DialogTitle>
         </DialogHeader>
-        
-        <div className="space-y-4 py-4">
+
+        <div className="space-y-3 py-4">
           {/* Order Summary */}
           <div className="bg-secondary/50 rounded-xl p-4">
-            <h4 className="font-semibold text-foreground mb-2">Order Summary</h4>
+            <h4 className="font-semibold text-foreground mb-2">
+              Order Summary
+            </h4>
             <div className="space-y-1 text-sm">
               {cartItems.map((item) => (
-                <div key={item.id} className="flex justify-between text-muted-foreground">
-                  <span>{item.name} × {item.quantity} {item.unit}</span>
+                <div
+                  key={item.id}
+                  className="flex justify-between text-muted-foreground"
+                >
+                  <span>
+                    {item.name} × {item.quantity} {item.unit}
+                  </span>
                   <span>₹{item.price * item.quantity}</span>
                 </div>
               ))}
@@ -46,6 +127,23 @@ const PaymentModal = ({ open, onOpenChange, cartItems, onPlaceOrder }: PaymentMo
               <span>Total</span>
               <span className="text-primary">₹{totalPrice}</span>
             </div>
+          </div>
+
+          {/* Delivery Address */}
+          <div className="bg-secondary/50 rounded-xl p-4">
+            <h4 className="font-semibold text-foreground mb-2">
+              Delivery Address
+            </h4>
+            <textarea
+              value={address}
+              onChange={(e) => saveAddress(e.target.value)}
+              placeholder="Enter delivery address (house, street, city, pincode)"
+              className="w-full p-2 rounded border resize-none h-20 mb-2"
+            />
+            <p className="text-xs text-muted-foreground">
+              Address is saved to your device and will be included in the
+              WhatsApp message.
+            </p>
           </div>
 
           {/* Payment Options */}
@@ -62,8 +160,12 @@ const PaymentModal = ({ open, onOpenChange, cartItems, onPlaceOrder }: PaymentMo
                 <Banknote className="w-5 h-5 text-accent" />
               </div>
               <div className="text-left">
-                <p className="font-semibold text-foreground">Cash on Delivery</p>
-                <p className="text-sm text-muted-foreground">Pay when you receive</p>
+                <p className="font-semibold text-foreground">
+                  Cash on Delivery
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Pay when you receive
+                </p>
               </div>
             </button>
 
@@ -79,8 +181,12 @@ const PaymentModal = ({ open, onOpenChange, cartItems, onPlaceOrder }: PaymentMo
                 <CreditCard className="w-5 h-5 text-primary" />
               </div>
               <div className="text-left">
-                <p className="font-semibold text-foreground">Online Payment (UPI)</p>
-                <p className="text-sm text-muted-foreground">Pay via UPI/GPay/PhonePe</p>
+                <p className="font-semibold text-foreground">
+                  Online Payment (UPI)
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Pay via UPI/GPay/PhonePe
+                </p>
               </div>
             </button>
           </div>
@@ -91,14 +197,19 @@ const PaymentModal = ({ open, onOpenChange, cartItems, onPlaceOrder }: PaymentMo
               <p className="text-sm text-muted-foreground mb-3">
                 Scan QR code or use UPI ID to pay ₹{totalPrice}
               </p>
-              <img 
-                src={upiQR} 
-                alt="UPI Payment QR Code" 
-                className="w-32 h-32 sm:w-40 sm:h-40 mx-auto rounded-lg border border-border"
+              <img
+                ref={qrRef}
+                src={upiQR}
+                alt="UPI Payment QR Code"
+                className={`w-32 h-32 sm:w-40 sm:h-40 mx-auto rounded-lg border border-border transition-shadow duration-300 ${
+                  highlightQR ? "ring-4 ring-primary/60 shadow-lg" : ""
+                }`}
               />
               <div className="mt-3 bg-secondary/50 rounded-lg p-2">
                 <p className="text-xs text-muted-foreground">UPI ID</p>
-                <p className="font-semibold text-primary text-sm">sushil@upi</p>
+                <p className="font-semibold text-primary text-sm">
+                  sunil.dabholakar91-1@oksbi
+                </p>
               </div>
               <p className="text-xs text-muted-foreground mt-3">
                 After payment, click below to confirm order on WhatsApp
@@ -111,9 +222,12 @@ const PaymentModal = ({ open, onOpenChange, cartItems, onPlaceOrder }: PaymentMo
             size="lg"
             className="w-full"
             onClick={handlePlaceOrder}
+            disabled={!address || address.trim().length === 0}
           >
             <MessageCircle className="w-5 h-5 mr-2" />
-            {paymentMethod === "online" ? "Confirm & Send Order" : "Place Order on WhatsApp"}
+            {paymentMethod === "online"
+              ? "Confirm & Send Order"
+              : "Place Order on WhatsApp"}
           </Button>
         </div>
       </DialogContent>
