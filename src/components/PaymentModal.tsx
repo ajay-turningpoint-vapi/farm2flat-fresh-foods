@@ -89,13 +89,17 @@ const PaymentModal = ({ open, onOpenChange, cartItems, onPlaceOrder }: PaymentMo
           {paymentMethod === "online" && (
             <div className="bg-card border border-border rounded-xl p-4 text-center animate-fade-in">
               <p className="text-sm text-muted-foreground mb-3">
-                Scan QR code to pay ₹{totalPrice}
+                Scan QR code or use UPI ID to pay ₹{totalPrice}
               </p>
               <img 
                 src={upiQR} 
                 alt="UPI Payment QR Code" 
-                className="w-40 h-40 mx-auto rounded-lg border border-border"
+                className="w-32 h-32 sm:w-40 sm:h-40 mx-auto rounded-lg border border-border"
               />
+              <div className="mt-3 bg-secondary/50 rounded-lg p-2">
+                <p className="text-xs text-muted-foreground">UPI ID</p>
+                <p className="font-semibold text-primary text-sm">sushil@upi</p>
+              </div>
               <p className="text-xs text-muted-foreground mt-3">
                 After payment, click below to confirm order on WhatsApp
               </p>
