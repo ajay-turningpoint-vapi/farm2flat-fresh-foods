@@ -6,6 +6,7 @@ import ProductCard from "@/components/ProductCard";
 import CartSummary from "@/components/CartSummary";
 import PriceNotice from "@/components/PriceNotice";
 import Footer from "@/components/Footer";
+import BusinessDetails from "@/components/BusinessDetails";
 import { Product, CartItem } from "@/types/product";
 
 import potatoImg from "@/assets/potato.png";
@@ -40,8 +41,8 @@ const PRODUCTS: Product[] = [
   },
 ];
 
-// WhatsApp number - replace with your actual number
-const WHATSAPP_NUMBER = "919999999999";
+// WhatsApp number for orders
+const WHATSAPP_NUMBER = "918975944936";
 
 const Index = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -74,7 +75,7 @@ const Index = () => {
     );
   };
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = (paymentMethod: "cod" | "online") => {
     if (cart.length === 0) {
       toast.error("Your cart is empty!");
       return;
@@ -82,14 +83,15 @@ const Index = () => {
 
     const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
     
-    const orderDetails = cart
-      .map((item) => `• ${item.name} - ${item.quantity} ${item.unit} @ ₹${item.price}/${item.unit} = ₹${item.price * item.quantity}`)
-      .join("%0A");
+    const paymentInfo = paymentMethod === "online" 
+      ? `💳 *Payment: Online (UPI) - PAID*\n\n`
+      : `💵 *Payment: Cash on Delivery*\n\n`;
     
     const message = encodeURIComponent(
       `🌿 *Farm2Flat Order*\n\n` +
       `${cart.map((item) => `• ${item.name} - ${item.quantity} ${item.unit} @ ₹${item.price}/${item.unit} = ₹${item.price * item.quantity}`).join("\n")}\n\n` +
       `*Total: ₹${totalPrice}*\n\n` +
+      paymentInfo +
       `Please confirm my order. Thank you!`
     );
 
@@ -134,6 +136,7 @@ const Index = () => {
       </main>
       
       <CartSummary cartItems={cart} onPlaceOrder={handlePlaceOrder} />
+      <BusinessDetails />
       <Footer />
     </div>
   );

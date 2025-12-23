@@ -1,13 +1,16 @@
-import { MessageCircle, ShoppingBag } from "lucide-react";
+import { useState } from "react";
+import { ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CartItem } from "@/types/product";
+import PaymentModal from "./PaymentModal";
 
 interface CartSummaryProps {
   cartItems: CartItem[];
-  onPlaceOrder: () => void;
+  onPlaceOrder: (paymentMethod: "cod" | "online") => void;
 }
 
 const CartSummary = ({ cartItems, onPlaceOrder }: CartSummaryProps) => {
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -39,12 +42,19 @@ const CartSummary = ({ cartItems, onPlaceOrder }: CartSummaryProps) => {
           <Button 
             variant="whatsapp" 
             size="xl"
-            onClick={onPlaceOrder}
+            onClick={() => setShowPaymentModal(true)}
             className="w-full sm:w-auto"
           >
-            <MessageCircle className="w-5 h-5 mr-2" />
-            Order on WhatsApp
+            <ShoppingBag className="w-5 h-5 mr-2" />
+            Proceed to Order
           </Button>
+          
+          <PaymentModal
+            open={showPaymentModal}
+            onOpenChange={setShowPaymentModal}
+            cartItems={cartItems}
+            onPlaceOrder={onPlaceOrder}
+          />
         </div>
         
         <div className="mt-3 pt-3 border-t border-border/50">
