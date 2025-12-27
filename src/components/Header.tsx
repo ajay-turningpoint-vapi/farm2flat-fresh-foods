@@ -7,12 +7,12 @@ const Header = () => {
         <div className="flex items-center gap-3">
           <img
             src={logo}
-            alt="Farm2Flat Logo"
+            alt="Farm2Flats Logo"
             className="w-14 h-14 rounded-full shadow-soft animate-float"
           />
           <div>
             <h1 className="text-2xl md:text-3xl font-extrabold text-primary tracking-tight">
-              FARM2FLAT
+              FARM2FLATS
             </h1>
             <p className="text-xs sm:text-sm text-muted-foreground leading-tight">
               Fresh produce, straight to you

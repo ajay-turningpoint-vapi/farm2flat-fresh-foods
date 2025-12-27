@@ -68,7 +68,7 @@ const Index = () => {
         : `💵 *Payment: Cash on Delivery*\n\n`;
 
     const message = encodeURIComponent(
-      `🌿 *Farm2Flat Order*\n\n` +
+      `🌿 *Farm2Flats Order*\n\n` +
         `${cart
           .map(
             (item) =>
