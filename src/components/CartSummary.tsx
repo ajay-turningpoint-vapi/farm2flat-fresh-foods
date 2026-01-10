@@ -1,8 +1,36 @@
-import { useState } from "react";
-import { ShoppingBag } from "lucide-react";
+import { useState, useMemo } from "react";
+import { ShoppingBag, Sparkles, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CartItem } from "@/types/product";
 import PaymentModal from "./PaymentModal";
+
+const WHATSAPP_NUMBER = "918975944936";
+
+// Bundle definitions for upgrade suggestions
+const bundles = [
+  {
+    id: "weekly-tadka",
+    name: "Weekly Tadka Bundle",
+    potato: 2,
+    onion: 2,
+    garlic: 0.25,
+    originalPrice: 350,
+    bundlePrice: 299,
+    savings: 51,
+    whatsappMessage: "Hi! Need Weekly Tadka Bundle ₹299 + [address]",
+  },
+  {
+    id: "family-pack",
+    name: "Family Pack",
+    potato: 5,
+    onion: 5,
+    garlic: 0.5,
+    originalPrice: 750,
+    bundlePrice: 599,
+    savings: 151,
+    whatsappMessage: "Family Pack ₹599 for [address] please",
+  },
+];
 
 interface CartSummaryProps {
   cartItems: CartItem[];
@@ -14,6 +42,52 @@ const CartSummary = ({ cartItems, onPlaceOrder }: CartSummaryProps) => {
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
+  // Check for bundle upgrade opportunities
+  const bundleSuggestion = useMemo(() => {
+    const potato = cartItems.find((item) => item.id === "potato")?.quantity || 0;
+    const onion = cartItems.find((item) => item.id === "onion")?.quantity || 0;
+    const garlic = cartItems.find((item) => item.id === "garlic")?.quantity || 0;
+
+    // Check if cart matches or exceeds bundle requirements
+    for (const bundle of bundles) {
+      if (
+        potato >= bundle.potato * 0.8 &&
+        onion >= bundle.onion * 0.8 &&
+        garlic >= bundle.garlic * 0.5
+      ) {
+        // Calculate what user would pay vs bundle price
+        const currentTotal =
+          potato * 35 + onion * 35 + garlic * 120;
+        
+        if (currentTotal >= bundle.bundlePrice * 0.9) {
+          return {
+            ...bundle,
+            currentTotal,
+            wouldSave: currentTotal - bundle.bundlePrice + bundle.savings,
+          };
+        }
+      }
+    }
+
+    // Check if close to weekly bundle
+    if (potato >= 1.5 || onion >= 1.5 || (potato >= 1 && onion >= 1)) {
+      const weeklyBundle = bundles[0];
+      return {
+        ...weeklyBundle,
+        currentTotal: totalPrice,
+        wouldSave: weeklyBundle.savings,
+        isNearMatch: true,
+      };
+    }
+
+    return null;
+  }, [cartItems, totalPrice]);
+
+  const handleBundleOrder = (message: string) => {
+    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, "_blank");
+  };
+
   if (cartItems.length === 0) {
     return null;
   }
@@ -21,6 +95,34 @@ const CartSummary = ({ cartItems, onPlaceOrder }: CartSummaryProps) => {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-t-2 border-primary/20 shadow-lg animate-slide-up">
       <div className="container mx-auto px-4 py-4">
+        {/* Bundle Upgrade Suggestion */}
+        {bundleSuggestion && (
+          <div className="mb-4 p-3 bg-accent/20 border border-accent/40 rounded-xl animate-fade-in">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-accent shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-foreground">
+                    💡 Upgrade to {bundleSuggestion.name}!
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Get more items + FREE extras • Save ₹{bundleSuggestion.savings}
+                  </p>
+                </div>
+              </div>
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => handleBundleOrder(bundleSuggestion.whatsappMessage)}
+                className="shrink-0 bg-accent hover:bg-accent/90 text-accent-foreground"
+              >
+                ₹{bundleSuggestion.bundlePrice}
+                <ArrowRight className="w-4 h-4 ml-1" />
+              </Button>
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="relative">
