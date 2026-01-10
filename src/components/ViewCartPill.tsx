@@ -1,13 +1,10 @@
 import { ShoppingBag, ChevronUp } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { CartItem } from "@/types/product";
+import { useNavigate } from "react-router-dom";
+import { useCart } from "@/context/CartContext";
 
-interface ViewCartPillProps {
-  cartItems: CartItem[];
-  onClick: () => void;
-}
-
-const ViewCartPill = ({ cartItems, onClick }: ViewCartPillProps) => {
+const ViewCartPill = () => {
+  const navigate = useNavigate();
+  const { cartItems } = useCart();
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -21,7 +18,7 @@ const ViewCartPill = ({ cartItems, onClick }: ViewCartPillProps) => {
 
   return (
     <button
-      onClick={onClick}
+      onClick={() => navigate("/cart")}
       className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-bounce-subtle"
     >
       <div className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2.5 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300">

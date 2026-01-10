@@ -5,101 +5,23 @@ import BundleCarousel from "@/components/BundleCarousel";
 import ProductCard from "@/components/ProductCard";
 import CartSummary from "@/components/CartSummary";
 import ViewCartPill from "@/components/ViewCartPill";
-import CartDrawer from "@/components/CartDrawer";
 import PriceNotice from "@/components/PriceNotice";
 import Footer from "@/components/Footer";
 import BusinessDetails from "@/components/BusinessDetails";
-import { Product, CartItem } from "@/types/product";
+import { Product } from "@/types/product";
+import { useCart } from "@/context/CartContext";
 import productsService from "@/lib/products";
 
 // Products will be loaded from `productsService` (localStorage)
 const PRODUCTS_PLACEHOLDER: Product[] = [];
 
-// WhatsApp number for orders
-const WHATSAPP_NUMBER = "919892162899";
-
 const Index = () => {
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
-
-  const handleAddToCart = (product: Product) => {
-    setCart((prev) => {
-      const existing = prev.find((item) => item.id === product.id);
-      if (existing) {
-        return prev.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-      return [...prev, { ...product, quantity: 1 }];
-    });
-    // Show cart drawer when adding first item
-    if (cart.length === 0) {
-      setCartDrawerOpen(true);
-    }
-  };
-
-  const handleUpdateQuantity = (productId: string, quantity: number) => {
-    if (quantity <= 0) {
-      setCart((prev) => prev.filter((item) => item.id !== productId));
-      // toast.info("Item removed from cart");
-      return;
-    }
-    setCart((prev) =>
-      prev.map((item) => (item.id === productId ? { ...item, quantity } : item))
-    );
-  };
-
-  const handlePlaceOrder = (
-    paymentMethod: "cod" | "online",
-    address: string
-  ) => {
-    if (cart.length === 0) {
-      // toast.error("Your cart is empty!");
-      return;
-    }
-
-    const totalPrice = cart.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    );
-
-    const paymentInfo =
-      paymentMethod === "online"
-        ? `💳 *Payment: Online (UPI) - PAID*\n\n`
-        : `💵 *Payment: Cash on Delivery*\n\n`;
-
-    const message = encodeURIComponent(
-      `🌿 *Farm2Flats Order*\n\n` +
-        `${cart
-          .map(
-            (item) =>
-              `• ${item.name} - ${item.quantity} ${item.unit} @ ₹${
-                item.price
-              }/${item.unit} = ₹${item.price * item.quantity}`
-          )
-          .join("\n")}\n\n` +
-        `*Total: ₹${totalPrice}*\n\n` +
-        `*Delivery address:*\n${address}\n\n` +
-        paymentInfo +
-        `Please confirm my order. Thank you!`
-    );
-
-    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
-    window.open(whatsappUrl, "_blank");
-    toast.success("Opening WhatsApp to place your order!");
-  };
-
+  const { addToCart, updateQuantity, getCartItem } = useCart();
   const [products, setProducts] = useState<Product[]>(PRODUCTS_PLACEHOLDER);
 
   useEffect(() => {
     setProducts(productsService.loadProducts());
   }, []);
-
-  const getCartItem = (productId: string) => {
-    return cart.find((item) => item.id === productId);
-  };
 
   const handleAddOnToCart = (addOn: {
     id: string;
@@ -117,7 +39,7 @@ const Index = () => {
       unit: addOn.unit,
       image: addOn.image || "",
     };
-    handleAddToCart(product);
+    addToCart(product);
     toast.success(`${addOn.name} added to cart!`);
   };
 
@@ -147,33 +69,19 @@ const Index = () => {
               <ProductCard
                 product={product}
                 cartItem={getCartItem(product.id)}
-                onAddToCart={handleAddToCart}
-                onUpdateQuantity={handleUpdateQuantity}
+                onAddToCart={addToCart}
+                onUpdateQuantity={updateQuantity}
               />
             </div>
           ))}
         </div>
       </main>
 
-      {/* BlinkIt-style View Cart Pill */}
-      <ViewCartPill cartItems={cart} onClick={() => setCartDrawerOpen(true)} />
+      {/* Floating Cart Pill - Opens dedicated cart page */}
+      <ViewCartPill />
 
-      {/* Cart Drawer */}
-      <CartDrawer
-        open={cartDrawerOpen}
-        onOpenChange={setCartDrawerOpen}
-        cartItems={cart}
-        onUpdateQuantity={handleUpdateQuantity}
-        onAddToCart={handleAddOnToCart}
-        onPlaceOrder={handlePlaceOrder}
-      />
-
-      {/* Cart Summary - Keep for bundle suggestions */}
-      <CartSummary
-        cartItems={cart}
-        onPlaceOrder={handlePlaceOrder}
-        onAddToCart={handleAddOnToCart}
-      />
+      {/* Cart Summary - For bundle upgrade suggestions */}
+      {/* <CartSummary /> */}
 
       <BusinessDetails />
       <Footer />
