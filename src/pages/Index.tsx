@@ -7,8 +7,6 @@ import CartSummary from "@/components/CartSummary";
 import PriceNotice from "@/components/PriceNotice";
 import Footer from "@/components/Footer";
 import BusinessDetails from "@/components/BusinessDetails";
-import AddOnsSection from "@/components/AddOnsSection";
-import PriceComparisonCarousel from "@/components/PriceComparisonCarousel";
 import { Product, CartItem } from "@/types/product";
 import productsService from "@/lib/products";
 
@@ -144,9 +142,8 @@ const Index = () => {
         </div>
       </main>
 
-      <AddOnsSection onAddToCart={handleAddOnToCart} />
-      <PriceComparisonCarousel />
-      <CartSummary cartItems={cart} onPlaceOrder={handlePlaceOrder} />
+      <CartSummary cartItems={cart} onPlaceOrder={handlePlaceOrder} onAddToCart={handleAddOnToCart} />
+      
       <BusinessDetails />
       <Footer />
     </div>

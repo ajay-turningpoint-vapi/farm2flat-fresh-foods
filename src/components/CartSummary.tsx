@@ -3,8 +3,9 @@ import { ShoppingBag, Sparkles, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CartItem } from "@/types/product";
 import PaymentModal from "./PaymentModal";
+import AddOnsModal from "./AddOnsModal";
 
-const WHATSAPP_NUMBER = "918975944936";
+const WHATSAPP_NUMBER = "919892162899";
 
 // Bundle definitions for upgrade suggestions
 const bundles = [
@@ -35,12 +36,19 @@ const bundles = [
 interface CartSummaryProps {
   cartItems: CartItem[];
   onPlaceOrder: (paymentMethod: "cod" | "online", address: string) => void;
+  onAddToCart: (addOn: { id: string; name: string; nameHindi: string; price: number; unit: string }) => void;
 }
 
-const CartSummary = ({ cartItems, onPlaceOrder }: CartSummaryProps) => {
+const CartSummary = ({ cartItems, onPlaceOrder, onAddToCart }: CartSummaryProps) => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showAddOnsModal, setShowAddOnsModal] = useState(false);
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  // Track which add-ons are already in cart
+  const addedAddOns = useMemo(() => {
+    return cartItems.map(item => item.id);
+  }, [cartItems]);
 
   // Check for bundle upgrade opportunities
   const bundleSuggestion = useMemo(() => {
@@ -86,6 +94,15 @@ const CartSummary = ({ cartItems, onPlaceOrder }: CartSummaryProps) => {
   const handleBundleOrder = (message: string) => {
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
+  };
+
+  const handleProceedToOrder = () => {
+    setShowAddOnsModal(true);
+  };
+
+  const handleContinueToCheckout = () => {
+    setShowAddOnsModal(false);
+    setShowPaymentModal(true);
   };
 
   if (cartItems.length === 0) {
@@ -144,12 +161,20 @@ const CartSummary = ({ cartItems, onPlaceOrder }: CartSummaryProps) => {
           <Button 
             variant="whatsapp" 
             size="xl"
-            onClick={() => setShowPaymentModal(true)}
+            onClick={handleProceedToOrder}
             className="w-full sm:w-auto"
           >
             <ShoppingBag className="w-5 h-5 mr-2" />
             Proceed to Order
           </Button>
+          
+          <AddOnsModal
+            open={showAddOnsModal}
+            onOpenChange={setShowAddOnsModal}
+            onAddToCart={onAddToCart}
+            addedItems={addedAddOns}
+            onContinue={handleContinueToCheckout}
+          />
           
           <PaymentModal
             open={showPaymentModal}
