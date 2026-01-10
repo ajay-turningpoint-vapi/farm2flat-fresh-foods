@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import Header from "@/components/Header";
-import HeroBanner from "@/components/HeroBanner";
+import BundleCarousel from "@/components/BundleCarousel";
 import ProductCard from "@/components/ProductCard";
 import CartSummary from "@/components/CartSummary";
 import PriceNotice from "@/components/PriceNotice";
@@ -9,7 +9,6 @@ import Footer from "@/components/Footer";
 import BusinessDetails from "@/components/BusinessDetails";
 import HowWeWork from "@/components/HowWeWork";
 import DeliveryInfo from "@/components/DeliveryInfo";
-import FAQ from "@/components/FAQ";
 import { Product, CartItem } from "@/types/product";
 import productsService from "@/lib/products";
 
@@ -101,7 +100,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <HeroBanner />
+      <BundleCarousel />
 
       <main className="container mx-auto px-4 py-8 pb-32">
         <div className="text-center mb-8 animate-fade-in">
@@ -135,7 +134,6 @@ const Index = () => {
       <CartSummary cartItems={cart} onPlaceOrder={handlePlaceOrder} />
       <HowWeWork />
       <DeliveryInfo />
-      <FAQ />
       <BusinessDetails />
       <Footer />
     </div>
