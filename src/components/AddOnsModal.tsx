@@ -24,61 +24,121 @@ interface AddOn {
 }
 
 const addOns: AddOn[] = [
-  { id: "coriander", name: "Coriander", nameHindi: "धनिया", price: 10, unit: "bunch", image: corianderImg },
-  { id: "lemon", name: "Lemon", nameHindi: "नींबू", price: 5, unit: "pc", image: lemonImg },
-  { id: "tomato", name: "Tomato", nameHindi: "टमाटर", price: 40, unit: "kg", image: tomatoImg },
-  { id: "green-chilli", name: "Green Chilli", nameHindi: "हरी मिर्च", price: 80, unit: "kg", image: greenChilliImg },
-  { id: "ginger", name: "Ginger", nameHindi: "अदरक", price: 120, unit: "kg", image: gingerImg },
-  { id: "curry-leaves", name: "Curry Leaves", nameHindi: "करी पत्ता", price: 10, unit: "bunch", image: curryLeavesImg },
+  {
+    id: "coriander",
+    name: "Coriander",
+    nameHindi: "धनिया",
+    price: 10,
+    unit: "bunch",
+    image: corianderImg,
+  },
+  {
+    id: "lemon",
+    name: "Lemon",
+    nameHindi: "नींबू",
+    price: 5,
+    unit: "pc",
+    image: lemonImg,
+  },
+  {
+    id: "tomato",
+    name: "Tomato",
+    nameHindi: "टमाटर",
+    price: 40,
+    unit: "kg",
+    image: tomatoImg,
+  },
+  {
+    id: "green-chilli",
+    name: "Green Chilli",
+    nameHindi: "हरी मिर्च",
+    price: 80,
+    unit: "kg",
+    image: greenChilliImg,
+  },
+  {
+    id: "ginger",
+    name: "Ginger",
+    nameHindi: "अदरक",
+    price: 120,
+    unit: "kg",
+    image: gingerImg,
+  },
+  {
+    id: "curry-leaves",
+    name: "Curry Leaves",
+    nameHindi: "करी पत्ता",
+    price: 10,
+    unit: "bunch",
+    image: curryLeavesImg,
+  },
 ];
 
 interface AddOnsModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAddToCart: (addOn: { id: string; name: string; nameHindi: string; price: number; unit: string }) => void;
+  onAddToCart: (addOn: {
+    id: string;
+    name: string;
+    nameHindi: string;
+    price: number;
+    unit: string;
+  }) => void;
   addedItems: string[];
   onContinue: () => void;
 }
 
-const AddOnsModal = ({ open, onOpenChange, onAddToCart, addedItems, onContinue }: AddOnsModalProps) => {
+const AddOnsModal = ({
+  open,
+  onOpenChange,
+  onAddToCart,
+  addedItems,
+  onContinue,
+}: AddOnsModalProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center">
+      <DialogContent className="w-[95vw] max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto p-3 sm:p-6">
+        <DialogHeader className="pb-2 sm:pb-4">
+          <DialogTitle className="text-xl sm:text-2xl font-bold text-center">
             Quick <span className="text-primary">Add-Ons</span>
           </DialogTitle>
-          <DialogDescription className="text-center">
+          <DialogDescription className="text-center text-xs sm:text-sm">
             Complete your kitchen with these essentials
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4 py-4">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:gap-4 py-2 sm:py-4">
           {addOns.map((addOn) => {
             const isAdded = addedItems.includes(addOn.id);
             return (
               <div
                 key={addOn.id}
-                className={`bg-card rounded-xl border p-4 text-center transition-all ${
-                  isAdded ? "border-primary bg-primary/5" : "border-border/50 hover:shadow-md"
+                className={`bg-card rounded-lg sm:rounded-xl border p-2 sm:p-3 text-center transition-all ${
+                  isAdded
+                    ? "border-primary bg-primary/5"
+                    : "border-border/50 hover:shadow-md"
                 }`}
               >
-                <div className="w-16 h-16 mx-auto mb-2 rounded-lg overflow-hidden bg-secondary/30">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-1.5 sm:mb-2 rounded-lg overflow-hidden bg-secondary/30">
                   <img
                     src={addOn.image}
                     alt={addOn.name}
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <h4 className="font-semibold text-foreground text-sm">{addOn.name}</h4>
-                <p className="text-muted-foreground text-xs mb-2">{addOn.nameHindi}</p>
-                <p className="text-primary font-bold text-sm mb-3">
+                <h4 className="font-semibold text-foreground text-xs sm:text-sm">
+                  {addOn.name}
+                </h4>
+                <p className="text-muted-foreground text-[10px] sm:text-xs mb-1.5 sm:mb-2">
+                  {addOn.nameHindi}
+                </p>
+                <p className="text-primary font-bold text-xs sm:text-sm mb-2 sm:mb-3">
                   ₹{addOn.price}/{addOn.unit}
                 </p>
                 <Button
                   size="sm"
                   variant={isAdded ? "default" : "outline"}
-                  className="w-full text-xs"
+                  className="w-full text-[10px] sm:text-xs h-9 sm:h-8"
                   onClick={() => onAddToCart(addOn)}
                 >
                   {isAdded ? (
@@ -98,17 +158,17 @@ const AddOnsModal = ({ open, onOpenChange, onAddToCart, addedItems, onContinue }
           })}
         </div>
 
-        <div className="flex gap-3 pt-4 border-t">
+        <div className="flex flex-col gap-2 sm:flex-row sm:gap-3 pt-3 sm:pt-4 border-t">
           <Button
             variant="outline"
-            className="flex-1"
+            className="flex-1 h-10 sm:h-9"
             onClick={() => onOpenChange(false)}
           >
             Skip Add-Ons
           </Button>
           <Button
             variant="whatsapp"
-            className="flex-1"
+            className="flex-1 h-10 sm:h-9"
             onClick={onContinue}
           >
             Continue to Checkout →
