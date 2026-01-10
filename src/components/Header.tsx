@@ -1,11 +1,12 @@
 import { Phone, PhoneCall } from "lucide-react";
 import logo from "@/assets/farm2flat-logo.png";
 
-const PHONE_NUMBER = "+919892162899";
+const DIAL_NUMBER = "+919892162899";   // used only for calling
+const DISPLAY_NUMBER = "98921 62899";  // shown to users (no +91)
 
 const Header = () => {
   const handleCall = () => {
-    window.location.href = `tel:${PHONE_NUMBER}`;
+window.location.href = `tel:${DIAL_NUMBER}`;
   };
 
   return (
@@ -31,10 +32,10 @@ const Header = () => {
         <div className="hidden md:flex items-center gap-2 text-sm">
           <PhoneCall className="w-4 h-4 text-primary" />
           <a
-            href={`tel:${PHONE_NUMBER}`}
+            href={`tel:${DIAL_NUMBER}`}
             className="font-semibold text-foreground hover:text-primary transition-colors"
           >
-            {PHONE_NUMBER}
+            {DISPLAY_NUMBER}
           </a>
         </div>
 
