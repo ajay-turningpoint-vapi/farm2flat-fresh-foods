@@ -4,6 +4,8 @@ import Header from "@/components/Header";
 import BundleCarousel from "@/components/BundleCarousel";
 import ProductCard from "@/components/ProductCard";
 import CartSummary from "@/components/CartSummary";
+import ViewCartPill from "@/components/ViewCartPill";
+import CartDrawer from "@/components/CartDrawer";
 import PriceNotice from "@/components/PriceNotice";
 import Footer from "@/components/Footer";
 import BusinessDetails from "@/components/BusinessDetails";
@@ -18,6 +20,7 @@ const WHATSAPP_NUMBER = "919892162899";
 
 const Index = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
 
   const handleAddToCart = (product: Product) => {
     setCart((prev) => {
@@ -31,7 +34,10 @@ const Index = () => {
       }
       return [...prev, { ...product, quantity: 1 }];
     });
-    // toast.success(`${product.name} added to cart!`);
+    // Show cart drawer when adding first item
+    if (cart.length === 0) {
+      setCartDrawerOpen(true);
+    }
   };
 
   const handleUpdateQuantity = (productId: string, quantity: number) => {
@@ -101,6 +107,7 @@ const Index = () => {
     nameHindi: string;
     price: number;
     unit: string;
+    image?: string;
   }) => {
     const product: Product = {
       id: addOn.id,
@@ -108,7 +115,7 @@ const Index = () => {
       nameHindi: addOn.nameHindi,
       price: addOn.price,
       unit: addOn.unit,
-      image: "",
+      image: addOn.image || "",
     };
     handleAddToCart(product);
     toast.success(`${addOn.name} added to cart!`);
@@ -148,6 +155,20 @@ const Index = () => {
         </div>
       </main>
 
+      {/* BlinkIt-style View Cart Pill */}
+      <ViewCartPill cartItems={cart} onClick={() => setCartDrawerOpen(true)} />
+
+      {/* Cart Drawer */}
+      <CartDrawer
+        open={cartDrawerOpen}
+        onOpenChange={setCartDrawerOpen}
+        cartItems={cart}
+        onUpdateQuantity={handleUpdateQuantity}
+        onAddToCart={handleAddOnToCart}
+        onPlaceOrder={handlePlaceOrder}
+      />
+
+      {/* Cart Summary - Keep for bundle suggestions */}
       <CartSummary
         cartItems={cart}
         onPlaceOrder={handlePlaceOrder}
