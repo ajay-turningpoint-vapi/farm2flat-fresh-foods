@@ -9,70 +9,75 @@ interface ProductCardProps {
   onUpdateQuantity: (productId: string, quantity: number) => void;
 }
 
-const ProductCard = ({ 
-  product, 
-  cartItem, 
-  onAddToCart, 
-  onUpdateQuantity 
+const ProductCard = ({
+  product,
+  cartItem,
+  onAddToCart,
+  onUpdateQuantity,
 }: ProductCardProps) => {
   const quantity = cartItem?.quantity || 0;
 
   return (
-    <div className="group bg-card rounded-2xl overflow-hidden shadow-card hover:shadow-lg transition-all duration-300 animate-fade-in border border-border/50">
-      <div className="relative h-48 overflow-hidden bg-secondary/30">
+    <div className="group bg-card rounded-xl overflow-hidden shadow-card hover:shadow-md transition-all duration-300 animate-fade-in border border-border/50">
+      <div className="relative h-40 overflow-hidden bg-secondary/30">
         <img
           src={product.image}
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
-        <div className="absolute top-3 right-3 bg-accent text-accent-foreground px-3 py-1.5 rounded-full font-bold text-sm shadow-glow">
+        <div className="absolute top-2 right-2 bg-accent text-accent-foreground px-2 py-1 rounded-full font-semibold text-xs shadow-glow">
           ₹{product.price}/{product.unit}
         </div>
       </div>
-      
-      <div className="p-5">
-        <div className="mb-4">
-          <h3 className="text-xl font-bold text-foreground">{product.name}</h3>
-          <p className="text-muted-foreground text-sm">{product.nameHindi}</p>
+
+      <div className="p-4">
+        <div className="mb-3">
+          <h3 className="text-lg font-bold text-foreground">{product.name}</h3>
+          <p className="text-muted-foreground text-xs">{product.nameHindi}</p>
         </div>
-        
+
         {quantity === 0 ? (
-          <Button 
-            variant="default" 
-            size="lg" 
+          <Button
+            variant="default"
+            size="sm"
             className="w-full"
             onClick={() => onAddToCart(product)}
           >
-            <ShoppingCart className="w-5 h-5 mr-2" />
+            <ShoppingCart className="w-4 h-4 mr-1.5" />
             Add to Cart
           </Button>
         ) : (
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center justify-between gap-2">
             <Button
               variant="quantity"
               onClick={() => onUpdateQuantity(product.id, quantity - 1)}
             >
-              <Minus className="w-4 h-4" />
+              <Minus className="w-3.5 h-3.5" />
             </Button>
-            
+
             <div className="flex-1 text-center">
-              <span className="text-2xl font-bold text-primary">{quantity}</span>
-              <span className="text-muted-foreground ml-1">{product.unit}</span>
+              <span className="text-xl font-bold text-primary">{quantity}</span>
+              <span className="text-muted-foreground ml-1 text-sm">
+                {product.unit}
+              </span>
             </div>
-            
+
             <Button
               variant="quantity"
               onClick={() => onUpdateQuantity(product.id, quantity + 1)}
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-3.5 h-3.5" />
             </Button>
           </div>
         )}
-        
+
         {quantity > 0 && (
-          <div className="mt-3 pt-3 border-t border-border">
-            <p className="text-center text-muted-foreground">
-              Subtotal: <span className="font-bold text-primary">₹{product.price * quantity}</span>
+          <div className="mt-2 pt-2 border-t border-border">
+            <p className="text-center text-muted-foreground text-xs">
+              Subtotal:{" "}
+              <span className="font-bold text-primary">
+                ₹{product.price * quantity}
+              </span>
             </p>
           </div>
         )}

@@ -95,7 +95,13 @@ const Index = () => {
     return cart.find((item) => item.id === productId);
   };
 
-  const handleAddOnToCart = (addOn: { id: string; name: string; nameHindi: string; price: number; unit: string }) => {
+  const handleAddOnToCart = (addOn: {
+    id: string;
+    name: string;
+    nameHindi: string;
+    price: number;
+    unit: string;
+  }) => {
     const product: Product = {
       id: addOn.id,
       name: addOn.name,
@@ -113,12 +119,12 @@ const Index = () => {
       <Header />
       <BundleCarousel />
 
-      <main className="container mx-auto px-4 py-8 pb-32">
-        <div className="text-center mb-8 animate-fade-in">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+      <main className="container mx-auto px-3 py-6 pb-32">
+        <div className="text-center mb-6 animate-fade-in">
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-1">
             Today's <span className="text-primary">Fresh Picks</span>
           </h2>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-xs">
             Farm-fresh vegetables at daily market prices
           </p>
         </div>
@@ -142,8 +148,12 @@ const Index = () => {
         </div>
       </main>
 
-      <CartSummary cartItems={cart} onPlaceOrder={handlePlaceOrder} onAddToCart={handleAddOnToCart} />
-      
+      <CartSummary
+        cartItems={cart}
+        onPlaceOrder={handlePlaceOrder}
+        onAddToCart={handleAddOnToCart}
+      />
+
       <BusinessDetails />
       <Footer />
     </div>

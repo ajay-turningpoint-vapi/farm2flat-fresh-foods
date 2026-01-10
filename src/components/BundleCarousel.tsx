@@ -55,7 +55,9 @@ const potatoPriceComparison = {
 
 const BundleCarousel = () => {
   const handleOrderBundle = (message: string) => {
-    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+      message
+    )}`;
     window.open(whatsappUrl, "_blank");
   };
 
@@ -78,7 +80,7 @@ const BundleCarousel = () => {
         <CarouselContent className="-ml-0">
           {bundles.map((bundle) => (
             <CarouselItem key={bundle.id} className="pl-0">
-              <div className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
+              <div className="relative w-full h-[320px] md:h-[400px] overflow-hidden">
                 {/* Background Image */}
                 <div
                   className="absolute inset-0 bg-cover bg-center"
@@ -88,53 +90,55 @@ const BundleCarousel = () => {
                 <div className="absolute inset-0 bg-black/50" />
 
                 {/* Content */}
-                <div className="relative z-10 h-full flex flex-col justify-center px-6 md:px-16 lg:px-24">
-                  <div className="max-w-2xl space-y-4 animate-fade-in">
+                <div className="relative z-10 h-full flex flex-col justify-center px-5 md:px-12 lg:px-16">
+                  <div className="max-w-xl space-y-3 animate-fade-in">
                     {/* Discount Badge */}
-                    <div className="inline-flex items-center gap-2 bg-destructive text-destructive-foreground px-4 py-2 rounded-full text-sm md:text-base font-bold animate-pulse">
-                      <Sparkles className="w-4 h-4" />
+                    <div className="inline-flex items-center gap-2 bg-destructive text-destructive-foreground px-3 py-1 rounded-full text-xs md:text-sm font-bold animate-pulse">
+                      <Sparkles className="w-3 h-3" />
                       SAVE ₹{bundle.savings} • {bundle.discount}
                     </div>
 
                     {/* Title */}
-                    <h2 className="text-3xl md:text-5xl font-bold text-white leading-tight">
+                    <h2 className="text-2xl md:text-4xl font-bold text-white leading-tight">
                       {bundle.emoji} {bundle.title}
                     </h2>
 
                     {/* Items */}
-                    <p className="text-lg md:text-xl text-white/90 font-medium">
+                    <p className="text-sm md:text-base text-white/90 font-medium">
                       {bundle.items}
                     </p>
 
                     {/* Pricing */}
-                    <div className="flex flex-wrap items-center gap-4">
-                      <span className="text-white/60 line-through text-xl md:text-2xl">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span className="text-white/60 line-through text-base md:text-xl">
                         ₹{bundle.originalPrice}
                       </span>
-                      <span className="text-4xl md:text-5xl font-bold text-white">
+                      <span className="text-3xl md:text-4xl font-bold text-white">
                         ₹{bundle.bundlePrice}
                       </span>
                     </div>
 
                     {/* Freebie */}
                     <div className="flex items-center gap-2 text-white/90">
-                      <Gift className="w-5 h-5 text-accent" />
-                      <span className="text-base md:text-lg">{bundle.freebie}</span>
+                      <Gift className="w-4 h-4 text-accent" />
+                      <span className="text-xs md:text-sm">
+                        {bundle.freebie}
+                      </span>
                     </div>
 
                     {/* CTA Button */}
                     <Button
                       onClick={() => handleOrderBundle(bundle.whatsappMessage)}
                       variant="whatsapp"
-                      size="xl"
-                      className="mt-4 text-lg font-bold shadow-2xl hover:scale-105 transition-transform"
+                      size="lg"
+                      className="mt-3 text-base font-bold shadow-2xl hover:scale-105 transition-transform"
                     >
                       ORDER ON WHATSAPP →
                     </Button>
 
                     {/* Price Breakdown */}
-                    <div className="pt-4 text-sm text-white/60 flex items-center gap-2">
-                      <Check className="w-4 h-4" />
+                    <div className="pt-3 text-xs text-white/60 flex items-center gap-2">
+                      <Check className="w-3.5 h-3.5" />
                       Potato: ₹35/kg | Onion: ₹35/kg | Garlic: ₹120/kg
                     </div>
                   </div>
@@ -145,7 +149,7 @@ const BundleCarousel = () => {
 
           {/* Price Comparison Slide */}
           <CarouselItem className="pl-0">
-            <div className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
+            <div className="relative w-full h-[320px] md:h-[400px] overflow-hidden">
               {/* Background Image */}
               <div
                 className="absolute inset-0 bg-cover bg-center"
@@ -155,52 +159,61 @@ const BundleCarousel = () => {
               <div className="absolute inset-0 bg-black/60" />
 
               {/* Content */}
-              <div className="relative z-10 h-full flex flex-col justify-center px-6 md:px-16 lg:px-24">
-                <div className="max-w-3xl space-y-6 animate-fade-in">
+              <div className="relative z-10 h-full flex flex-col justify-center px-5 md:px-12 lg:px-16">
+                <div className="max-w-2xl space-y-4 animate-fade-in">
                   {/* Title */}
-                  <div className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-4 py-2 rounded-full text-sm md:text-base font-bold">
-                    <TrendingDown className="w-4 h-4" />
+                  <div className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-3 py-1 rounded-full text-xs md:text-sm font-bold">
+                    <TrendingDown className="w-3 h-3" />
                     COMPARE & SAVE
                   </div>
 
-                  <h2 className="text-3xl md:text-5xl font-bold text-white leading-tight">
+                  <h2 className="text-2xl md:text-4xl font-bold text-white leading-tight">
                     🥔 Potato Price Comparison
                   </h2>
 
-                  <p className="text-lg md:text-xl text-white/90">
+                  <p className="text-sm md:text-base text-white/90">
                     Why pay more? Get farm-fresh potatoes at the best price!
                   </p>
 
                   {/* Price Comparison Cards */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
                     {/* Our Price */}
-                    <div className="bg-accent/90 backdrop-blur-sm rounded-xl p-4 text-center border-2 border-accent">
-                      <div className="flex items-center justify-center gap-1 mb-2">
-                        <BadgeCheck className="w-5 h-5 text-accent-foreground" />
-                        <span className="font-bold text-accent-foreground text-sm">Farm2Flat</span>
+                    <div className="bg-accent/90 backdrop-blur-sm rounded-lg p-3 text-center border-2 border-accent">
+                      <div className="flex items-center justify-center gap-1 mb-1.5">
+                        <BadgeCheck className="w-4 h-4 text-accent-foreground" />
+                        <span className="font-bold text-accent-foreground text-xs">
+                          Farm2Flat
+                        </span>
                       </div>
-                      <div className="text-3xl md:text-4xl font-bold text-accent-foreground">
+                      <div className="text-2xl md:text-3xl font-bold text-accent-foreground">
                         ₹{potatoPriceComparison.ourPrice}
                       </div>
-                      <div className="text-accent-foreground/80 text-sm">per kg</div>
+                      <div className="text-accent-foreground/80 text-xs">
+                        per kg
+                      </div>
                     </div>
 
                     {/* Competitor Prices */}
                     {potatoPriceComparison.competitors.map((competitor) => {
-                      const savings = competitor.price - potatoPriceComparison.ourPrice;
+                      const savings =
+                        competitor.price - potatoPriceComparison.ourPrice;
                       return (
                         <div
                           key={competitor.name}
-                          className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20"
+                          className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center border border-white/20"
                         >
-                          <div className="flex items-center justify-center gap-1 mb-2">
-                            <div className={`w-3 h-3 rounded-full ${competitor.color}`} />
-                            <span className="font-medium text-white/80 text-sm">{competitor.name}</span>
+                          <div className="flex items-center justify-center gap-1 mb-1.5">
+                            <div
+                              className={`w-2.5 h-2.5 rounded-full ${competitor.color}`}
+                            />
+                            <span className="font-medium text-white/80 text-xs">
+                              {competitor.name}
+                            </span>
                           </div>
-                          <div className="text-2xl md:text-3xl font-bold text-white/60 line-through">
+                          <div className="text-xl md:text-2xl font-bold text-white/60 line-through">
                             ₹{competitor.price}
                           </div>
-                          <div className="text-destructive text-sm font-semibold">
+                          <div className="text-destructive text-xs font-semibold">
                             +₹{savings} more
                           </div>
                         </div>
@@ -209,19 +222,27 @@ const BundleCarousel = () => {
                   </div>
 
                   {/* Savings Message */}
-                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="text-4xl">💰</div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="text-2xl">💰</div>
                       <div>
-                        <p className="text-white font-bold text-lg">Save up to ₹13/kg!</p>
-                        <p className="text-white/70 text-sm">Direct from farmers, no middlemen</p>
+                        <p className="text-white font-bold text-sm">
+                          Save up to ₹13/kg!
+                        </p>
+                        <p className="text-white/70 text-xs">
+                          Direct from farmers, no middlemen
+                        </p>
                       </div>
                     </div>
                     <Button
-                      onClick={() => handleOrderBundle("Hi! I want to order fresh Potatoes at ₹35/kg")}
+                      onClick={() =>
+                        handleOrderBundle(
+                          "Hi! I want to order fresh Potatoes at ₹35/kg"
+                        )
+                      }
                       variant="whatsapp"
                       size="lg"
-                      className="hidden md:flex"
+                      className="hidden md:flex text-sm"
                     >
                       Order Now →
                     </Button>
@@ -231,8 +252,8 @@ const BundleCarousel = () => {
             </div>
           </CarouselItem>
         </CarouselContent>
-        <CarouselPrevious className="left-4 md:left-8 bg-white/20 hover:bg-white/40 border-none text-white" />
-        <CarouselNext className="right-4 md:right-8 bg-white/20 hover:bg-white/40 border-none text-white" />
+        <CarouselPrevious className="left-3 md:left-6 bg-white/20 hover:bg-white/40 border-none text-white" />
+        <CarouselNext className="right-3 md:right-6 bg-white/20 hover:bg-white/40 border-none text-white" />
       </Carousel>
     </section>
   );

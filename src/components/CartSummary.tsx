@@ -36,25 +36,40 @@ const bundles = [
 interface CartSummaryProps {
   cartItems: CartItem[];
   onPlaceOrder: (paymentMethod: "cod" | "online", address: string) => void;
-  onAddToCart: (addOn: { id: string; name: string; nameHindi: string; price: number; unit: string }) => void;
+  onAddToCart: (addOn: {
+    id: string;
+    name: string;
+    nameHindi: string;
+    price: number;
+    unit: string;
+  }) => void;
 }
 
-const CartSummary = ({ cartItems, onPlaceOrder, onAddToCart }: CartSummaryProps) => {
+const CartSummary = ({
+  cartItems,
+  onPlaceOrder,
+  onAddToCart,
+}: CartSummaryProps) => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showAddOnsModal, setShowAddOnsModal] = useState(false);
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const totalPrice = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
 
   // Track which add-ons are already in cart
   const addedAddOns = useMemo(() => {
-    return cartItems.map(item => item.id);
+    return cartItems.map((item) => item.id);
   }, [cartItems]);
 
   // Check for bundle upgrade opportunities
   const bundleSuggestion = useMemo(() => {
-    const potato = cartItems.find((item) => item.id === "potato")?.quantity || 0;
+    const potato =
+      cartItems.find((item) => item.id === "potato")?.quantity || 0;
     const onion = cartItems.find((item) => item.id === "onion")?.quantity || 0;
-    const garlic = cartItems.find((item) => item.id === "garlic")?.quantity || 0;
+    const garlic =
+      cartItems.find((item) => item.id === "garlic")?.quantity || 0;
 
     // Check if cart matches or exceeds bundle requirements
     for (const bundle of bundles) {
@@ -64,9 +79,8 @@ const CartSummary = ({ cartItems, onPlaceOrder, onAddToCart }: CartSummaryProps)
         garlic >= bundle.garlic * 0.5
       ) {
         // Calculate what user would pay vs bundle price
-        const currentTotal =
-          potato * 35 + onion * 35 + garlic * 120;
-        
+        const currentTotal = potato * 35 + onion * 35 + garlic * 120;
+
         if (currentTotal >= bundle.bundlePrice * 0.9) {
           return {
             ...bundle,
@@ -92,7 +106,9 @@ const CartSummary = ({ cartItems, onPlaceOrder, onAddToCart }: CartSummaryProps)
   }, [cartItems, totalPrice]);
 
   const handleBundleOrder = (message: string) => {
-    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+      message
+    )}`;
     window.open(whatsappUrl, "_blank");
   };
 
@@ -111,63 +127,67 @@ const CartSummary = ({ cartItems, onPlaceOrder, onAddToCart }: CartSummaryProps)
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-t-2 border-primary/20 shadow-lg animate-slide-up">
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-3 py-3">
         {/* Bundle Upgrade Suggestion */}
         {bundleSuggestion && (
-          <div className="mb-4 p-3 bg-accent/20 border border-accent/40 rounded-xl animate-fade-in">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="mb-3 p-2.5 bg-accent/20 border border-accent/40 rounded-lg animate-fade-in">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-accent shrink-0" />
+                <Sparkles className="w-4 h-4 text-accent shrink-0" />
                 <div>
-                  <p className="text-sm font-semibold text-foreground">
+                  <p className="text-xs font-semibold text-foreground">
                     💡 Upgrade to {bundleSuggestion.name}!
                   </p>
-                  <p className="text-xs text-muted-foreground">
-                    Get more items + FREE extras • Save ₹{bundleSuggestion.savings}
+                  <p className="text-[10px] text-muted-foreground">
+                    Get more items + FREE extras • Save ₹
+                    {bundleSuggestion.savings}
                   </p>
                 </div>
               </div>
               <Button
                 variant="default"
                 size="sm"
-                onClick={() => handleBundleOrder(bundleSuggestion.whatsappMessage)}
+                onClick={() =>
+                  handleBundleOrder(bundleSuggestion.whatsappMessage)
+                }
                 className="shrink-0 bg-accent hover:bg-accent/90 text-accent-foreground"
               >
                 ₹{bundleSuggestion.bundlePrice}
-                <ArrowRight className="w-4 h-4 ml-1" />
+                <ArrowRight className="w-3.5 h-3.5 ml-1" />
               </Button>
             </div>
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
             <div className="relative">
-              <ShoppingBag className="w-8 h-8 text-primary" />
-              <span className="absolute -top-2 -right-2 bg-accent text-accent-foreground text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              <ShoppingBag className="w-6 h-6 text-primary" />
+              <span className="absolute -top-2 -right-2 bg-accent text-accent-foreground text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
                 {totalItems}
               </span>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">
-                {cartItems.length} item{cartItems.length > 1 ? "s" : ""} · {totalItems} {totalItems > 1 ? "units" : "unit"}
+              <p className="text-xs text-muted-foreground">
+                {cartItems.length} item{cartItems.length > 1 ? "s" : ""} ·{" "}
+                {totalItems} {totalItems > 1 ? "units" : "unit"}
               </p>
-              <p className="text-xl font-bold text-foreground">
+              <p className="text-lg font-bold text-foreground">
                 Total: <span className="text-primary">₹{totalPrice}</span>
               </p>
             </div>
           </div>
-          
-          <Button 
-            variant="whatsapp" 
-            size="xl"
+
+          <Button
+            variant="whatsapp"
+            size="lg"
             onClick={handleProceedToOrder}
             className="w-full sm:w-auto"
           >
-            <ShoppingBag className="w-5 h-5 mr-2" />
+            <ShoppingBag className="w-4 h-4 mr-1.5" />
             Proceed to Order
           </Button>
-          
+
           <AddOnsModal
             open={showAddOnsModal}
             onOpenChange={setShowAddOnsModal}
@@ -175,7 +195,7 @@ const CartSummary = ({ cartItems, onPlaceOrder, onAddToCart }: CartSummaryProps)
             addedItems={addedAddOns}
             onContinue={handleContinueToCheckout}
           />
-          
+
           <PaymentModal
             open={showPaymentModal}
             onOpenChange={setShowPaymentModal}
@@ -183,15 +203,16 @@ const CartSummary = ({ cartItems, onPlaceOrder, onAddToCart }: CartSummaryProps)
             onPlaceOrder={onPlaceOrder}
           />
         </div>
-        
-        <div className="mt-3 pt-3 border-t border-border/50">
-          <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
+
+        <div className="mt-2 pt-2 border-t border-border/50">
+          <div className="flex flex-wrap gap-1.5 justify-center sm:justify-start">
             {cartItems.map((item) => (
-              <span 
+              <span
                 key={item.id}
-                className="bg-secondary text-secondary-foreground text-sm px-3 py-1 rounded-full"
+                className="bg-secondary text-secondary-foreground text-xs px-2.5 py-0.5 rounded-full"
               >
-                {item.name}: {item.quantity} {item.unit} (₹{item.price * item.quantity})
+                {item.name}: {item.quantity} {item.unit} (₹
+                {item.price * item.quantity})
               </span>
             ))}
           </div>
