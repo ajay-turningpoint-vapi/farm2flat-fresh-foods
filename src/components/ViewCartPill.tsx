@@ -59,7 +59,7 @@ const ViewCartPill = () => {
         </div>
 
         {/* Price */}
-        <span className="font-bold text-sm">₹{totalPrice}</span>
+        <span className="font-bold text-sm">View</span>
 
         {/* Chevron */}
         <ChevronUp className="w-4 h-4 text-accent-foreground/70" />

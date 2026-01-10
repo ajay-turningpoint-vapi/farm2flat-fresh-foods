@@ -1,6 +1,7 @@
 import potatoImg from "@/assets/potato.png";
 import onionImg from "@/assets/onion.png";
 import garlicImg from "@/assets/garlic.png";
+import tomatoImg from "@/assets/tomato.jpeg";
 import { Product } from "@/types/product";
 
 const STORAGE_KEY = "f2f_products_v1";
@@ -23,13 +24,21 @@ export const defaultProducts: Product[] = [
     image: onionImg,
   },
   {
+    id: "tomato",
+    name: "Tomato",
+    nameHindi: "टमाटर",
+    price: 32,
+    unit: "kg",
+    image: tomatoImg,
+  },
+  {
     id: "garlic",
     name: "Garlic",
     nameHindi: "लहसुन",
     price: 120,
     unit: "kg",
     image: garlicImg,
-  },
+  }
 ];
 
 export function loadProducts(): Product[] {

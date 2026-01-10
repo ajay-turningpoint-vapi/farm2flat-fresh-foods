@@ -6,7 +6,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, CreditCard, Banknote } from "lucide-react";
+import {
+  MessageCircle,
+  CreditCard,
+  Banknote,
+  Download,
+  Copy,
+  Check,
+} from "lucide-react";
 import { CartItem } from "@/types/product";
 import upiQR from "@/assets/upi-qr.jpeg";
 
@@ -14,9 +21,10 @@ interface PaymentModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   cartItems: CartItem[];
-  // added address parameter so caller receives the delivery address
   onPlaceOrder: (paymentMethod: "cod" | "online", address: string) => void;
 }
+
+const UPI_ID = "sunil.dabholakar91-1@oksbi";
 
 const PaymentModal = ({
   open,
@@ -25,6 +33,7 @@ const PaymentModal = ({
   onPlaceOrder,
 }: PaymentModalProps) => {
   const [paymentMethod, setPaymentMethod] = useState<"cod" | "online">("cod");
+  const [copied, setCopied] = useState(false);
   const totalPrice = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
@@ -52,12 +61,7 @@ const PaymentModal = ({
 
   const handlePlaceOrder = () => {
     if (!address || address.trim().length === 0) {
-      // require address before placing order
-      try {
-        alert("Please enter your delivery address before placing the order.");
-      } catch (e) {
-        /* ignore */
-      }
+      alert("Please enter your delivery address before placing the order.");
       return;
     }
 
@@ -65,14 +69,56 @@ const PaymentModal = ({
     onOpenChange(false);
   };
 
+  const handleCopyUPI = () => {
+    // Create a temporary textarea element for copying
+    const textArea = document.createElement("textarea");
+    textArea.value = UPI_ID;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-99999999px";
+    textArea.style.top = "-99999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      document.execCommand("copy");
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      // Fallback: try clipboard API
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard
+          .writeText(UPI_ID)
+          .then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+          })
+          .catch(() => {
+            alert("Failed to copy. Please copy manually: " + UPI_ID);
+          });
+      } else {
+        alert("Failed to copy. Please copy manually: " + UPI_ID);
+      }
+    }
+
+    document.body.removeChild(textArea);
+  };
+
+  const handleDownloadQR = () => {
+    const link = document.createElement("a");
+    link.href = upiQR;
+    link.download = "farm2flat-upi-qr.jpeg";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // When online payment is selected on small screens, scroll modal to bottom
   useEffect(() => {
     if (paymentMethod !== "online") return;
-    // consider mobile if width < 640px (Tailwind's sm breakpoint)
     if (typeof window === "undefined") return;
     if (window.innerWidth >= 640) return;
 
-    // small timeout to allow UI to render (images/QR) before scrolling
     const t = setTimeout(() => {
       try {
         const el = dialogRef.current;
@@ -80,7 +126,6 @@ const PaymentModal = ({
           el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
         }
 
-        // also try to scroll the QR image into view and highlight it briefly
         const q = qrRef.current;
         if (q) {
           q.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -205,14 +250,52 @@ const PaymentModal = ({
                   highlightQR ? "ring-4 ring-primary/60 shadow-lg" : ""
                 }`}
               />
+
+              {/* Action Buttons */}
+              <div className="flex gap-2 justify-center mt-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDownloadQR}
+                  className="flex items-center gap-1.5"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Download QR
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCopyUPI}
+                  className="flex items-center gap-1.5"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-green-600" />
+                      <span className="text-green-600">Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5" />
+                      Copy UPI ID
+                    </>
+                  )}
+                </Button>
+              </div>
+
               <div className="mt-3 bg-secondary/50 rounded-lg p-2">
                 <p className="text-xs text-muted-foreground">UPI ID</p>
-                <p className="font-semibold text-primary text-sm">
-                  sunil.dabholakar91-1@oksbi
+                <p className="font-semibold text-primary text-sm">{UPI_ID}</p>
+              </div>
+              <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <p className="text-xs text-amber-800">
+                  <strong>Disclaimer:</strong> After payment, share the
+                  screenshot on <strong>+91 98921 62899</strong> to confirm your
+                  order.
                 </p>
               </div>
               <p className="text-xs text-muted-foreground mt-3">
-                After payment, click below to confirm order on WhatsApp
+                After sharing screenshot, click below to confirm order on
+                WhatsApp
               </p>
             </div>
           )}

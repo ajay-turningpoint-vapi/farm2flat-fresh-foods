@@ -48,7 +48,7 @@ const Index = () => {
       <Header />
       <BundleCarousel />
 
-      <main className="container mx-auto px-3 py-6 pb-32">
+      <main className="container mx-auto px-3 py-6 pb-6">
         <div className="text-center mb-6 animate-fade-in">
           <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-1">
             Today's <span className="text-primary">Fresh Picks</span>
@@ -58,9 +58,9 @@ const Index = () => {
           </p>
         </div>
 
-        <PriceNotice />
+        {/* <PriceNotice /> */}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {products.map((product, index) => (
             <div
               key={product.id}
@@ -83,7 +83,7 @@ const Index = () => {
       {/* Cart Summary - For bundle upgrade suggestions */}
       {/* <CartSummary /> */}
 
-      <BusinessDetails />
+      {/* <BusinessDetails /> */}
       <Footer />
     </div>
   );

@@ -7,6 +7,8 @@ import {
   ShoppingBag,
   Sparkles,
   Trash2,
+  ChevronRight,
+  Plus as PlusIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
@@ -68,6 +70,7 @@ const CartPage = () => {
   const navigate = useNavigate();
   const { cartItems, updateQuantity, addAddOnToCart, clearCart } = useCart();
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showOrderSummary, setShowOrderSummary] = useState(true);
 
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = cartItems.reduce(
@@ -75,9 +78,15 @@ const CartPage = () => {
     0
   );
 
-  // Track which add-ons are already in cart
-  const addedAddOns = useMemo(() => {
-    return cartItems.map((item) => item.id);
+  // Track which add-ons are already in cart and their quantities
+  const addOnQuantities = useMemo(() => {
+    const result: Record<string, number> = {};
+    cartItems.forEach((item) => {
+      if (addOns.some((addon) => addon.id === item.id)) {
+        result[item.id] = item.quantity;
+      }
+    });
+    return result;
   }, [cartItems]);
 
   const handleContinueToCheckout = () => {
@@ -123,9 +132,6 @@ const CartPage = () => {
   // Separate main items and add-ons
   const mainItems = cartItems.filter(
     (item) => !addOns.some((addon) => addon.id === item.id)
-  );
-  const cartAddOns = cartItems.filter((item) =>
-    addOns.some((addon) => addon.id === item.id)
   );
 
   if (cartItems.length === 0) {
@@ -191,7 +197,7 @@ const CartPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 container mx-auto px-4 py-6 pb-40">
+      <div className="flex-1 container mx-auto px-4 py-6 pb-48">
         {/* Cart Items List */}
         <div className="mb-8">
           <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
@@ -206,10 +212,10 @@ const CartPage = () => {
             {mainItems.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center gap-4 p-4 bg-card rounded-xl border border-border/50"
+                className="flex items-center gap-2 p-3 bg-card rounded-xl border border-border/50"
               >
                 {/* Product Image */}
-                <div className="w-20 h-20 rounded-lg overflow-hidden bg-secondary/30 shrink-0">
+                <div className="w-14 h-14 rounded-lg overflow-hidden bg-secondary/30 shrink-0">
                   {item.image ? (
                     <img
                       src={item.image}
@@ -217,7 +223,7 @@ const CartPage = () => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-primary/30">
+                    <div className="w-full h-full flex items-center justify-center text-lg font-bold text-primary/30">
                       {item.name.charAt(0)}
                     </div>
                   )}
@@ -225,40 +231,40 @@ const CartPage = () => {
 
                 {/* Product Info */}
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-foreground truncate">
+                  <h3 className="font-semibold text-foreground truncate text-sm">
                     {item.name}
                   </h3>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-muted-foreground text-xs">
                     {item.nameHindi}
                   </p>
-                  <p className="text-primary font-bold mt-1">
+                  <p className="text-primary font-bold text-xs mt-0.5">
                     ₹{item.price}/{item.unit}
                   </p>
                 </div>
 
-                {/* Quantity Controls */}
-                <div className="flex items-center gap-2 bg-secondary/50 rounded-full px-3 py-1.5">
+                {/* Very Small Quantity Controls for Mobile */}
+                <div className="flex items-center gap-1 bg-secondary/50 rounded-full px-1.5 py-0.5">
                   <button
                     onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                    className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-background transition-colors"
+                    className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-background transition-colors"
                   >
-                    <Minus className="w-4 h-4" />
+                    <Minus className="w-3 h-3" />
                   </button>
-                  <span className="w-10 text-center font-bold">
+                  <span className="w-6 text-center font-bold text-xs">
                     {item.quantity}
                   </span>
                   <button
                     onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                    className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-background transition-colors"
+                    className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-background transition-colors"
                   >
-                    <Plus className="w-4 h-4" />
+                    <Plus className="w-3 h-3" />
                   </button>
                 </div>
 
                 {/* Item Subtotal */}
-                <div className="text-right min-w-[80px]">
-                  <p className="text-sm text-muted-foreground">Subtotal</p>
-                  <p className="font-bold text-primary">
+                <div className="text-right min-w-[60px]">
+                  <p className="text-[10px] text-muted-foreground">Total</p>
+                  <p className="font-bold text-primary text-sm">
                     ₹{item.price * item.quantity}
                   </p>
                 </div>
@@ -267,89 +273,27 @@ const CartPage = () => {
           </div>
         </div>
 
-        {/* Add-Ons Section in Cards Format */}
-        {cartAddOns.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-accent" />
-              Add-Ons in Cart
-            </h2>
-
-            <div className="grid grid-cols-2 gap-3">
-              {cartAddOns.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center gap-3 p-3 bg-accent/5 border border-accent/20 rounded-xl"
-                >
-                  <div className="w-12 h-12 rounded-lg overflow-hidden bg-secondary/30 shrink-0">
-                    {item.image ? (
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-lg font-bold text-primary/30">
-                        {item.name.charAt(0)}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm truncate">
-                      {item.name}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {item.nameHindi}
-                    </p>
-                    <p className="text-primary font-bold text-sm">
-                      ₹{item.price * item.quantity}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-1.5 bg-secondary/50 rounded-full px-2 py-1">
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-background transition-colors"
-                    >
-                      <Minus className="w-3 h-3" />
-                    </button>
-                    <span className="w-6 text-center text-sm font-bold">
-                      {item.quantity}
-                    </span>
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-background transition-colors"
-                    >
-                      <Plus className="w-3 h-3" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* More Add-Ons Section */}
-        <div className="mb-6">
+        {/* Add-Ons Section - Horizontal scroll with +/- in card */}
+        <div className="mb-8">
           <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-accent" />
-            Add More Add-Ons
+            Add-Ons
           </h2>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {/* Horizontal scroll container - 1 row on mobile */}
+          <div className="flex overflow-x-auto gap-3 pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
             {addOns.map((addOn) => {
-              const isAdded = addedAddOns.includes(addOn.id);
+              const quantity = addOnQuantities[addOn.id] || 0;
               return (
                 <div
                   key={addOn.id}
-                  className={`p-3 rounded-xl border text-center transition-all ${
-                    isAdded
+                  className={`flex-shrink-0 w-[130px] p-2.5 rounded-xl border text-center transition-all ${
+                    quantity > 0
                       ? "border-primary bg-primary/5"
                       : "border-border/50 hover:border-primary/30 bg-card"
                   }`}
                 >
-                  <div className="w-12 h-12 mx-auto mb-2 rounded-lg overflow-hidden bg-secondary/30">
+                  <div className="w-10 h-10 mx-auto mb-1.5 rounded-lg overflow-hidden bg-secondary/30">
                     {addOn.image ? (
                       <img
                         src={addOn.image}
@@ -357,30 +301,119 @@ const CartPage = () => {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-lg font-bold text-primary/30">
+                      <div className="w-full h-full flex items-center justify-center text-base font-bold text-primary/30">
                         {addOn.name.charAt(0)}
                       </div>
                     )}
                   </div>
-                  <p className="font-semibold text-sm">{addOn.name}</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="font-semibold text-xs">{addOn.name}</p>
+                  <p className="text-[10px] text-muted-foreground">
                     {addOn.nameHindi}
                   </p>
-                  <p className="text-primary font-bold text-sm mt-1">
+                  <p className="text-primary font-bold text-xs mt-0.5">
                     ₹{addOn.price}/{addOn.unit}
                   </p>
-                  <Button
-                    size="sm"
-                    variant={isAdded ? "default" : "outline"}
-                    className="mt-2 w-full text-xs h-8"
-                    onClick={() => addAddOnToCart(addOn)}
-                  >
-                    {isAdded ? "Added" : "Add"}
-                  </Button>
+
+                  {/* Show Add button when quantity is 0, show +/- controls when quantity > 0 */}
+                  {quantity === 0 ? (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="mt-2 w-full text-[10px] h-7"
+                      onClick={() => addAddOnToCart(addOn)}
+                    >
+                      <PlusIcon className="w-3 h-3 mr-1" />
+                      Add
+                    </Button>
+                  ) : (
+                    <>
+                      {/* +/- controls directly in card */}
+                      <div className="flex items-center justify-center gap-1.5 mt-2">
+                        <button
+                          onClick={() =>
+                            updateQuantity(addOn.id, Math.max(0, quantity - 1))
+                          }
+                          className="w-6 h-6 rounded-full bg-secondary/50 flex items-center justify-center hover:bg-secondary transition-colors"
+                        >
+                          <Minus className="w-3 h-3" />
+                        </button>
+                        <span className="w-6 text-center font-bold text-xs">
+                          {quantity}
+                        </span>
+                        <button
+                          onClick={() => updateQuantity(addOn.id, quantity + 1)}
+                          className="w-6 h-6 rounded-full bg-secondary/50 flex items-center justify-center hover:bg-secondary transition-colors"
+                        >
+                          <Plus className="w-3 h-3" />
+                        </button>
+                      </div>
+                      <p className="text-[10px] text-primary font-medium mt-1">
+                        ₹{addOn.price * quantity}
+                      </p>
+                    </>
+                  )}
                 </div>
               );
             })}
           </div>
+        </div>
+
+        {/* Order Summary Section */}
+        <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
+          <button
+            onClick={() => setShowOrderSummary(!showOrderSummary)}
+            className="w-full px-4 py-3 flex items-center justify-between bg-secondary/30"
+          >
+            <h3 className="font-semibold text-foreground">Order Summary</h3>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-bold text-primary">
+                ₹{totalPrice}
+              </span>
+              <ChevronRight
+                className={`w-4 h-4 text-muted-foreground transition-transform ${
+                  showOrderSummary ? "rotate-90" : ""
+                }`}
+              />
+            </div>
+          </button>
+
+          {showOrderSummary && (
+            <div className="p-4 border-t border-border/50">
+              <div className="space-y-2">
+                {mainItems.map((item) => (
+                  <div key={item.id} className="flex justify-between text-xs">
+                    <span className="text-muted-foreground">
+                      {item.name} × {item.quantity}
+                    </span>
+                    <span className="font-medium">
+                      ₹{item.price * item.quantity}
+                    </span>
+                  </div>
+                ))}
+                {addOns.map((addon) => {
+                  const quantity = addOnQuantities[addon.id] || 0;
+                  if (quantity === 0) return null;
+                  return (
+                    <div
+                      key={addon.id}
+                      className="flex justify-between text-xs"
+                    >
+                      <span className="text-muted-foreground">
+                        {addon.name} × {quantity}
+                      </span>
+                      <span className="font-medium">
+                        ₹{addon.price * quantity}
+                      </span>
+                    </div>
+                  );
+                })}
+                <div className="pt-2 border-t border-border/50 flex justify-between">
+                  <span className="font-semibold">Subtotal</span>
+                  <span className="font-bold text-primary">₹{totalPrice}</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -389,7 +422,7 @@ const CartPage = () => {
         <div className="container mx-auto max-w-2xl">
           {/* Price Summary */}
           <div className="flex justify-between items-center mb-3">
-            <span className="text-muted-foreground">Subtotal</span>
+            <span className="text-muted-foreground text-sm">Subtotal</span>
             <span className="font-bold text-xl">₹{totalPrice}</span>
           </div>
 
