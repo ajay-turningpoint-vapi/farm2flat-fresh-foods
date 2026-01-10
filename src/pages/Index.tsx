@@ -7,8 +7,8 @@ import CartSummary from "@/components/CartSummary";
 import PriceNotice from "@/components/PriceNotice";
 import Footer from "@/components/Footer";
 import BusinessDetails from "@/components/BusinessDetails";
-import HowWeWork from "@/components/HowWeWork";
-import DeliveryInfo from "@/components/DeliveryInfo";
+import AddOnsSection from "@/components/AddOnsSection";
+import PriceComparisonCarousel from "@/components/PriceComparisonCarousel";
 import { Product, CartItem } from "@/types/product";
 import productsService from "@/lib/products";
 
@@ -97,6 +97,19 @@ const Index = () => {
     return cart.find((item) => item.id === productId);
   };
 
+  const handleAddOnToCart = (addOn: { id: string; name: string; nameHindi: string; price: number; unit: string }) => {
+    const product: Product = {
+      id: addOn.id,
+      name: addOn.name,
+      nameHindi: addOn.nameHindi,
+      price: addOn.price,
+      unit: addOn.unit,
+      image: "",
+    };
+    handleAddToCart(product);
+    toast.success(`${addOn.name} added to cart!`);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -131,9 +144,9 @@ const Index = () => {
         </div>
       </main>
 
+      <AddOnsSection onAddToCart={handleAddOnToCart} />
+      <PriceComparisonCarousel />
       <CartSummary cartItems={cart} onPlaceOrder={handlePlaceOrder} />
-      <HowWeWork />
-      <DeliveryInfo />
       <BusinessDetails />
       <Footer />
     </div>
