@@ -147,8 +147,8 @@ const BundleCarousel = () => {
             </CarouselItem>
           ))}
 
-         
-        <CarouselPrevious className="left-3 md:left-6 bg-white/20 hover:bg-white/40 border-none text-white" />
+        </CarouselContent> 
+           <CarouselPrevious className="left-3 md:left-6 bg-white/20 hover:bg-white/40 border-none text-white" />
         <CarouselNext className="right-3 md:right-6 bg-white/20 hover:bg-white/40 border-none text-white" />
       </Carousel>
     </section>
